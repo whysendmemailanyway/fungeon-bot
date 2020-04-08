@@ -1,4 +1,4 @@
-Install:
+### Install:
 
 ```
 cd xfchatlib
@@ -7,10 +7,10 @@ cd ..
 npm install
 ```
 
-Configure:
+### Configure:
 
-1. Create a .env file in the project directory
-1. Define the following environment variables:
+1. Create a `.env` file in the project directory
+1. Define the following environment variables in your `.env` file:
 ```
 FLIST_USERNAME=yourflistaccountnamehere
 FLIST_PASSWORD=yourflistpasswordhere
@@ -23,11 +23,12 @@ CLIENT_VERSION=this project's version number, e.g 1.0.0
 
 Make sure `.env` is listed in your `.gitignore` file if you plan on sharing the repository with anyone. Keep your account name and password secret!
 
-Run:
+### Run:
 
 ```
 npm start
 ```
 
-Credits:
+### Credits: 
+
 AelithBlanchett saved me a ton of work with their fchatlib package! https://www.npmjs.com/package/fchatlib
