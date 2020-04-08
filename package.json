@@ -1,0 +1,24 @@
+{
+  "name": "fungeon-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "cd xfchatlib/ && npm install && cd .. && node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/whysendmemailanyway/fungeon-bot.git"
+  },
+  "author": "whysendmemailanyway",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/whysendmemailanyway/fungeon-bot/issues"
+  },
+  "homepage": "https://github.com/whysendmemailanyway/fungeon-bot#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "typescript": "^3.8.3"
+  }
+}
