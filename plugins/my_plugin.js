@@ -34,9 +34,9 @@ var CommandHandler = function(fChatClient, channel){
     this.fChatClient.addInviteListener((data) => console.log(data));
 };
 
-var getRandomInt = function(min, max) {
-    return Math.floor(Math.random() * (max - min)) + min;
-};
+// var getRandomInt = function(min, max) {
+//     return Math.floor(Math.random() * (max - min)) + min;
+// };
 
 // var rollDie = function() {
 //     this.fChatClient.roll("1d6", channel);

@@ -335,7 +335,6 @@ export default class FChatLib implements IFChatLib{
     }
 
     async connect():Promise<void>{
-        console.log('attempting to connect');
         this.ws = null;
         this.setFloodLimit(2);
 
@@ -573,8 +572,6 @@ export default class FChatLib implements IFChatLib{
 
 
     startWebsockets(json):void {
-        console.log('starting websockets');
-        console.log(json);
         if (this.config.debug == true) {
             this.ws = new WebSocketClient('ws://chat.f-list.net:8722');
         }
@@ -591,14 +588,14 @@ export default class FChatLib implements IFChatLib{
 
         this.ws.on('close', (data) => {
             console.log("Closed WS");
-            console.log(data);
             process.exit();
         });
 
         this.ws.on('error', (data) => {
             console.log("Disconnected WS");
-            console.log(data);
-            setTimeout(() => { this.connect(); }, 4000);
+            setTimeout(() => {
+                this.connect();
+            }, 60000);
         });
 
         this.ws.on('message', (data, flags) => {
