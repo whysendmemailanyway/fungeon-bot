@@ -73,6 +73,7 @@ class Character {
     }
 
     getArmorClass() {
+        // TODO: add equipped armor..?
         return 10 + this.getDexBonus();
     }
 
