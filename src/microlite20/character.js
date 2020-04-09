@@ -1,32 +1,35 @@
 const dice = require('../dice');
+let raceLib = require('./race');
+let skillsLib = require('./skills');
+let statsLib = require('./stats');
+
 class Character {
-    constructor(name='', race=Character.RACE_HUMAN, charClass=Character.CLASS_FIGHTER) {
+    constructor(name='', race=raceLib.allRaces.NONE, charClass=Character.CLASS_FIGHTER) {
         this.name = name;
         this.race = race;
         this.charClass = charClass;
         this.level = 1;
+        this.hpGains = [6];
         this.setStr(this.rollStat());
         this.setDex(this.rollStat());
         this.setMind(this.rollStat());
         this.damage = 0;
         this.spellDamage = 0;
-        this.maxHitPoints = this.getStr() + 6;
+        this.strengthDamage = 0;
         console.log(this.toString());
+        console.log('');
     }
 
     setStr(newValue) {
         this._str = newValue;
-        this._maxStr = this.getStr();
     }
 
     setDex(newValue) {
         this._dex = newValue;
-        this._maxDex = this.getDex();
     }
 
     setMind(newValue) {
         this._mind = newValue;
-        this._maxMind = this.getMind();
     }
 
     getStrBonus() {
@@ -45,16 +48,20 @@ class Character {
         return Math.floor((stat - 10) / 2);
     }
 
+    getBonusForKey(key) {
+        return this.race.bonuses[key] || 0;
+    }
+
     dealDamage(amount) {
-        let hp = this.maxHitPoints - (this.damage + this.spellDamage);
+        let hp = this.getCurrentHP();
         if (hp - amount > 0) {
             this.damage += amount;
         } else if (hp - amount === 0) {
             this.damage += amount;
             // fall unconscious
         } else {
-            this.damage = this.maxHitPoints - (this.spellDamage);
-            this.setStr(this.getStr() + (hp - amount));
+            this.damage = this.getMaxHP() - (this.spellDamage);
+            this.strengthDamage += hp - amount;
             if (this.getStr() <= 0) {
                 // die
             }
@@ -111,67 +118,54 @@ class Character {
     }
 
     getStr() {
-        let bonus = 0;
-        if (this.race === Character.RACE_DWARF) {
-            bonus = 2;
-        }
-        return this._str + bonus;
+        let bonus = this.getBonusForKey(statsLib.STR);
+        return this._str + bonus - this.strengthDamage;
     }
 
     getDex() {
-        let bonus = 0;
-        if (this.race === Character.RACE_HALFLING) {
-            bonus = 2;
-        }
+        let bonus = this.getBonusForKey(statsLib.DEX);
         return this._dex + bonus;
     }
 
     getMind() {
-        let bonus = 0;
-        if (this.race === Character.RACE_ELF) {
-            bonus = 2;
-        }
+        let bonus = this.getBonusForKey(statsLib.MIND);
         return this._mind + bonus;
     }
 
     getPhysical() {
-        let bonus = 0;
+        let bonus = this.getBonusForKey(skillsLib.PHYSICAL);
         if (this.charClass === Character.CLASS_FIGHTER) bonus += 3;
-        if (this.race === Character.RACE_HUMAN) bonus += 1;
         return this.level + bonus;
     }
 
     getSubterfuge() {
-        let bonus = 0;
+        let bonus = this.getBonusForKey(skillsLib.SUBTERFUGE);
         if (this.charClass === Character.CLASS_ROGUE) bonus += 3;
-        if (this.race === Character.RACE_HUMAN) bonus += 1;
         return this.level + bonus;
     }
 
     getKnowledge() {
-        let bonus = 0;
+        let bonus = this.getBonusForKey(skillsLib.KNOWLEDGE);
         if (this.charClass === Character.CLASS_MAGI) bonus += 3;
-        if (this.race === Character.RACE_HUMAN) bonus += 1;
         return this.level + bonus;
     }
 
     getCommunication() {
-        let bonus = 0;
+        let bonus = this.getBonusForKey(skillsLib.COMMUNICATION);
         if (this.charClass === Character.CLASS_CLERIC) bonus += 3;
-        if (this.race === Character.RACE_HUMAN) bonus += 1;
         return this.level + bonus;
     }
 
     getFortitude() {
-        return this.getPhysical() + this.getStr();
+        return this.getPhysical() + this.getStrBonus();
     }
 
     getReflex() {
-        return this.getPhysical() + this.getDex();
+        return this.getPhysical() + this.getDexBonus();
     }
 
     getWill() {
-        return this.level + this.getMind();
+        return this.level + this.getMindBonus();
     }
 
     getMaxSpellLevel() {
@@ -207,21 +201,24 @@ class Character {
             3,5,7,9,etc.
         */
         this.level += 1;
-        this.maxHitPoints += dice.getRandomInt(1, 6);
+        this.hpGains.push(dice.getRandomInt(1, 6));
+    }
+
+    getMaxHP() {
+        return this.getStr() + this.hpGains.reduce((a, b) => a + b);
+    }
+
+    getCurrentHP() {
+        return this.getMaxHP() - (this.damage + this.spellDamage);
     }
 
     toString() {
-        return `${this.name}, a level ${this.level} ${this.race} ${this.charClass}. ${this.getStr()} STR, ${this.getDex()} DEX, ${this.getMind()} MIND. ${this.maxHitPoints - (this.damage + this.spellDamage)} / ${this.maxHitPoints} HP.`
+        return `${this.name}, a level ${this.level} ${this.race.name} ${this.charClass}. ${this.getStr()} STR, ${this.getDex()} DEX, ${this.getMind()} MIND. ${this.getCurrentHP()} / ${this.getMaxHP()} HP.`
     }
 }
 Character.CLASS_FIGHTER = "Fighter";
 Character.CLASS_ROGUE = "Rogue";
 Character.CLASS_MAGI = "Magi";
 Character.CLASS_CLERIC = "Cleric";
-
-Character.RACE_HUMAN = "Human";
-Character.RACE_ELF = "Elf";
-Character.RACE_DWARF = "Dwarf";
-Character.RACE_HALFLING = "Halfling";
 
 module.exports.default = Character;
