@@ -19,6 +19,8 @@
   "homepage": "https://github.com/whysendmemailanyway/fungeon-bot#readme",
   "dependencies": {
     "dotenv": "^8.2.0",
+    "knex": "^0.20.13",
+    "pg": "^8.0.0",
     "typescript": "^3.8.3"
   }
 }

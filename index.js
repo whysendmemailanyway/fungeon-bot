@@ -18,4 +18,24 @@ let options = {
 let myFchatBot = new FChatLib(options);
 //myFchatBot.connect();
 //let myPlugin = botPlugin(myFchatBot, options.room);
-let game = new Microlite20();
+
+// var knex = require('knex')({
+//     client: 'pg',
+//     connection: {
+//         host : process.env.DB_HOST,
+//         user : process.env.PG_USER,
+//         password : process.env.PG_PASS,
+//         database : process.env.DB_DEVELOPMENT
+//     }
+// });
+
+var knex = require('knex')(require('./knexfile').development);
+
+knex
+    .select()
+    .from('newtable')
+    .then((data) => {
+        console.log(data);
+        knex.destroy();
+    });
+//let game = new Microlite20();
