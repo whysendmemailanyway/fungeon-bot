@@ -1,9 +1,6 @@
 'use strict';
 require('dotenv').config();
-//require('./src/microlite20');
-//let Microlite20 = require('./src/microlite20').default;
 let Microlite20 = require('./src/microlite20/microlite20').default;
-//import Microlite20 from ('./src/microlite20/microlite20.mjs');
 let FChatLib = require('./xfchatlib').default;
 let botPlugin = require('./plugins/my_plugin').CommandHandler;
 let options = {
@@ -31,11 +28,4 @@ let myFchatBot = new FChatLib(options);
 
 var knex = require('knex')(require('./knexfile').development);
 
-knex
-    .select()
-    .from('newtable')
-    .then((data) => {
-        console.log(data);
-        knex.destroy();
-    });
-//let game = new Microlite20();
+let game = new Microlite20(knex);

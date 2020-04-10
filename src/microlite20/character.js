@@ -10,12 +10,17 @@ class Character {
         this.charClass = charClass;
         this.level = 1;
         this.hpGains = [6];
+        this.armors = [];
         this.setStr(this.rollStat());
         this.setDex(this.rollStat());
         this.setMind(this.rollStat());
         this.damage = 0;
         this.spellDamage = 0;
         this.strengthDamage = 0;
+        this.leftHand = null;
+        this.rightHand = null;
+        // TODO: put things in pouches, backpacks, on belts, etc.
+        this.inventory = [];
         console.log(this.toString());
         console.log('');
     }
@@ -61,19 +66,76 @@ class Character {
             // fall unconscious
         } else {
             this.damage = this.getMaxHP() - (this.spellDamage);
-            this.strengthDamage += hp - amount;
+            this.strengthDamage -= hp - amount;
+            console.log(this.strengthDamage);
             if (this.getStr() <= 0) {
                 // die
             }
         }
     }
 
+    putInLeftHand(item) {
+        if (item.is_two_handed) throw "Can't put two-handed item in one hand";
+        if (this.leftHand) {
+            if (this.leftHand.is_two_handed) this.rightHand = null;
+            this.inventory.push(this.leftHand);
+        }
+        this.leftHand = item;
+    }
+
+    putInRightHand(item) {
+        if (item.is_two_handed) throw "Can't put two-handed item in one hand";
+        if (this.rightHand) {
+            if (this.rightHand.is_two_handed) this.leftHand = null;
+            this.inventory.push(this.rightHand);
+        }
+        this.rightHand = item;
+    }
+
+    putInBothHands(item) {
+        if (!item.is_two_handed) throw "Can't put one-handed item in both hands";
+        if (this.leftHand) this.inventory.push(this.leftHand);
+        if (this.rightHand) this.inventory.push(this.rightHand);
+        this.leftHand = item;
+        this.rightHand = item;
+    }
+
+    equipArmor(armor) {
+        if (!armor.is_armor) throw "Can't put non-armor items on as armor.";
+        this.armors.push(armor);
+    }
+
+    unequipArmor(armor) {
+        let index = this.armors.indexOf(armor);
+        if (index !== -1) this.armors.splice(index, 1);
+    }
+
     getInitiative() {
         return this.getDexBonus();
     }
 
+    getBonusesFromArmor() {
+        let armorBonus = this.armors.reduce((sum, armor) => sum + armor.armor_bonus, 0);
+        if (this.rightHand && this.rightHand.is_two_handed) {
+            if (this.rightHand.armor_bonus) {
+                armorBonus += this.rightHand.armor_bonus;
+            }
+        } else {
+            if (this.leftHand && this.leftHand.armor_bonus) {
+                armorBonus += this.leftHand.armor_bonus;
+            }
+            if (this.rightHand && this.rightHand.armor_bonus) {
+                armorBonus += this.rightHand.armor_bonus;
+            }
+        }
+        return armorBonus;
+    }
+
     getArmorClass() {
-        // TODO: add equipped armor..?
+        return 10 + this.getDexBonus() + this.getBonusesFromArmor();
+    }
+
+    getTouchArmorClass() {
         return 10 + this.getDexBonus();
     }
 
@@ -214,7 +276,7 @@ class Character {
     }
 
     toString() {
-        return `${this.name}, a level ${this.level} ${this.race.name} ${this.charClass}. ${this.getStr()} STR, ${this.getDex()} DEX, ${this.getMind()} MIND. ${this.getCurrentHP()} / ${this.getMaxHP()} HP.`
+        return `${this.name}, a level ${this.level} ${this.race.name} ${this.charClass}. ${this.getStr()} STR, ${this.getDex()} DEX, ${this.getMind()} MIND. ${this.getCurrentHP()} / ${this.getMaxHP()} HP, ${this.getArmorClass()} AC.`
     }
 }
 Character.CLASS_FIGHTER = "Fighter";

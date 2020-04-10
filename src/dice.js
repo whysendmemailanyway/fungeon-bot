@@ -1,5 +1,6 @@
 module.exports = {
     getRandomInt: function(min, max) {
-        return Math.floor(Math.random() * (max - min)) + min;
+        let result = Math.floor(Math.random() * (max - min)) + min;
+        return result;
     }
 }
