@@ -10,7 +10,9 @@ const item_flags = [
     'is_heavy',
     'is_ranged',
     'is_armor',
-    'is_shield'
+    'is_shield',
+    'is_melee',
+    'is_clothing'
 ];
 
 exports.up = function(knex) {
